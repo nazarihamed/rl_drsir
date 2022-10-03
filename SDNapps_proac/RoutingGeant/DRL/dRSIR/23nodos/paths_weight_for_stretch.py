@@ -1,6 +1,7 @@
 import json
-file_k_paths = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/23nodos/k_paths.json'
-# file_k_paths = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/topos/topo_32_nodes_k_20_paths.json'
+import setting
+file_k_paths = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/23nodos/k_paths.json'
+# file_k_paths = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/topos/topo_32_nodes_k_20_paths.json'
 
 with open(file_k_paths,'r+') as json_file:
     k_paths_dict = json.load(json_file)

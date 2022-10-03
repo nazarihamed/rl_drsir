@@ -170,11 +170,11 @@ class simple_Monitor(app_manager.RyuApp):
 
     def get_k_paths(self):
         i = time.time()
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/k_paths.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/64nodos/k_paths.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/48nodos/k_paths.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/32nodos/k_paths.json'
-        file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/23nodos/k_paths.json'
+        # file = setting.PATH_TO_FILES+'k_paths.json'
+        # file = setting.PATH_TO_FILES+'k_paths.json'
+        # file = setting.PATH_TO_FILES+'k_paths.json'
+        # file = setting.PATH_TO_FILES+'k_paths.json'
+        file = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/23nodos/k_paths.json'
         with open(file,'r') as json_file:
             k_shortest_paths = json.load(json_file)
             k_shortest_paths = ast.literal_eval(json.dumps(k_shortest_paths))
@@ -369,12 +369,12 @@ class simple_Monitor(app_manager.RyuApp):
 
     def get_dRL_paths(self):
 
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/48nodos/fffpaths_weight.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/32nodos/fffpaths_weight.json'
-        file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/drl_paths.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/rl_paths.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/rl_paths23.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/drl_paths23.json'
+        # file = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/48nodos/fffpaths_weight.json'
+        # file = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/32nodos/fffpaths_weight.json'
+        file = setting.PATH_TO_FILES+'drl_paths.json'
+        # file = setting.PATH_TO_FILES+'rl_paths.json'
+        # file = setting.PATH_TO_FILES+'rl_paths23.json'
+        # file = setting.PATH_TO_FILES+'drl_paths23.json'
         try:
             with open(file,'r') as json_file:
                 paths_dict = json.load(json_file)
@@ -691,9 +691,9 @@ class simple_Monitor(app_manager.RyuApp):
                     
                     #Get links capacities
                     
-                    # file = '~/ryu/ryu/app/SDNapps_proac/bw.txt' #original link capacities
+                    # file = setting.PATH_TO_FILES+'bw.txt' #original link capacities
                     
-                    file_bw = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/bw_r.txt' #random link capacities
+                    file_bw = setting.PATH_TO_FILES+'bw_r.txt' #random link capacities
                     link_to_port = self.awareness.link_to_port
 
                     # print("-------SW , PORT:", dpid, port_no)

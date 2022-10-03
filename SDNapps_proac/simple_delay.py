@@ -1,4 +1,5 @@
 from __future__ import division
+from asyncio.log import logger
 from ryu import cfg
 from ryu.base import app_manager
 from ryu.base.app_manager import lookup_service_brick
@@ -7,6 +8,7 @@ from ryu.controller.handler import MAIN_DISPATCHER, DEAD_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 from ryu.lib import hub
+from ryu.topology.api import get_switch
 from ryu.topology.switches import Switches
 from ryu.topology.switches import LLDPPacket
 from ryu.app import simple_switch_13
@@ -29,6 +31,7 @@ class simple_Delay(app_manager.RyuApp):
         self.name = "delay"
         self.sending_echo_request_interval = 0.1 #rl
         # self.sending_echo_request_interval = 0.1 #drl
+        # self.sw_module = get_switch(self, None)
         self.sw_module = lookup_service_brick('switches')
         self.awareness = lookup_service_brick('awareness')
         # self.awareness = kwargs["simple_awareness"]
@@ -38,6 +41,10 @@ class simple_Delay(app_manager.RyuApp):
         # Get initiation delay.
         self.initiation_delay = 10#setting.DISCOVERY_PERIOD #wait topology discovery is done
         self.start_time = time.time()
+
+        # Added by Hamed
+        self.echo_sent_time = {}
+        self.echo_rcv_time = {}
 
         self.measure_thread = hub.spawn(self._detector)
 
@@ -78,8 +85,12 @@ class simple_Delay(app_manager.RyuApp):
         """
         for datapath in self.datapaths.values():
             parser = datapath.ofproto_parser
-            echo_req = parser.OFPEchoRequest(datapath,
-                                             data="%.12f" % time.time())
+            # echo_req = parser.OFPEchoRequest(datapath,data="%.12f" % time.time())
+            echo_req = parser.OFPEchoRequest(datapath)
+            
+            #Added by Hamed
+            self.echo_sent_time[datapath.id] = time.time()
+
             datapath.send_msg(echo_req)
             # Important! Don't send echo request together, Because it will
             # generate a lot of echo reply almost in the same time.
@@ -95,7 +106,14 @@ class simple_Delay(app_manager.RyuApp):
         """
         now_timestamp = time.time()
         try:
-            latency = now_timestamp - eval(ev.msg.data)
+            #Added by Hamed
+            self.echo_rcv_time[ev.msg.datapath.id] = time.time()
+
+            # latency = now_timestamp - eval(ev.msg.data)
+            
+            #Modified by Hamed
+            latency =  self.echo_rcv_time[ev.msg.datapath.id] - self.echo_send_time[ev.msg.datapath.id]
+            
             self.echo_latency[ev.msg.datapath.id] = latency
         except:
             return
@@ -194,12 +212,158 @@ class simple_Delay(app_manager.RyuApp):
     def show_delay_statis(self):
         if self.awareness is None:
             print("Not doing nothing, awarness none")
-        # else:
-        #     print("Latency ok")
-        # if setting.TOSHOW and self.awareness is not None:
-        #     self.logger.info("\nsrc   dst      delay")
-        #     self.logger.info("---------------------------")
-        #     for src in self.awareness.graph:
-        #         for dst in self.awareness.graph[src]:
-        #             delay = self.awareness.graph[src][dst]['delay']
-        #             self.logger.info("%s   <-->   %s :   %s" % (src, dst, delay))
+        else:
+            print("Latency ok")
+        if setting.TOSHOW and self.awareness is not None:
+            self.logger.info("\nsrc   dst      delay")
+            self.logger.info("---------------------------")
+            for src in self.awareness.graph:
+                for dst in self.awareness.graph[src]:
+                    delay = self.awareness.graph[src][dst]['delay']
+                    self.logger.info("%s   <-->   %s :   %s" % (src, dst, delay))
+
+###########################################################################################
+    # def send_port_stats_request(self, datapath):
+    #     ofp = datapath.ofproto
+    #     ofp_parser = datapath.ofproto_parser
+    #     req = ofp_parser.OFPPortStatsRequest(datapath, 0, ofp.OFPP_ANY)
+    #     self.rtt_stats_sent[datapath.id] = time.time()
+    #     datapath.send_msg(req)
+    #     # save timeStamp for RTT
+
+    # def send_flow_stats_request(self, datapath):
+    #     ofp = datapath.ofproto
+    #     ofp_parser = datapath.ofproto_parser
+    #     # only the ones with layer 4
+    #     match = ofp_parser.OFPMatch(eth_type=2048)
+    #     req = ofp_parser.OFPFlowStatsRequest(datapath, 0, ofp.OFPTT_ALL,
+    #                                          ofp.OFPP_ANY, ofp.OFPG_ANY, 0, 0, match)
+    #     self.rtt_stats_sent[datapath.id] = time.time()
+    #     datapath.send_msg(req)
+
+    # @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
+    # def port_stats_reply_handler(self, ev):
+    #     current_time = time.time()
+    #     dpid_rec = ev.msg.datapath.id
+    #     # updating switch controller latency
+    #     old_time = self.rtt_stats_sent[dpid_rec]
+    #     total_rtt = current_time - old_time
+    #     self.rtt_portStats_to_dpid[dpid_rec] = total_rtt
+    #     body = ev.msg.body
+    #     # parsing the answer
+    #     for statistic in body:
+    #         # get port id
+    #         port_no = int(statistic.port_no)
+    #         # self.rtt_port_stats_sent[dpid_rec] = 0
+    #         if dpid_rec in self.data_map.keys():
+    #             for dpid_sent_element in self.data_map[dpid_rec]:
+    #                 in_port = self.data_map[dpid_rec][dpid_sent_element]["in_port"]
+    #                 if in_port == port_no:
+    #                     # found the right connection
+    #                     # check if bw-map is built, first time!
+    #                     if dpid_rec not in self.temp_bw_map_ports.keys():
+    #                         self.temp_bw_map_ports[dpid_rec] = {}
+    #                         self.bandwith_port_dict[dpid_rec] = {}
+    #                     if port_no not in self.temp_bw_map_ports[dpid_rec].keys():
+    #                         self.temp_bw_map_ports[dpid_rec][port_no] = {}
+    #                         bytes_now = statistic.rx_bytes
+    #                         # bytes_now = stat.tx_bytes
+    #                         ts_now = (statistic.duration_sec + statistic.duration_nsec / (10 ** 9))
+    #                         # overwriting tempMap
+    #                         self.temp_bw_map_ports[dpid_rec][port_no]['ts'] = ts_now
+    #                         self.temp_bw_map_ports[dpid_rec][port_no]['bytes'] = bytes_now
+    #                     else:
+    #                         ts_before = self.temp_bw_map_ports[dpid_rec][port_no]['ts']
+    #                         bytes_before = self.temp_bw_map_ports[dpid_rec][port_no]['bytes']
+    #                         # ts_now = time.time()
+    #                         bytes_now = statistic.tx_bytes
+    #                         ts_now = (statistic.duration_sec + statistic.duration_nsec / (10 ** 9))
+    #                         byte_diff = bytes_now - bytes_before
+    #                         ts_diff = ts_now - ts_before
+    #                         # overwriting tempMap
+    #                         self.temp_bw_map_ports[dpid_rec][port_no]['ts'] = ts_now
+    #                         self.temp_bw_map_ports[dpid_rec][port_no]['bytes'] = bytes_now
+    #                         # bw (bytes/sec)
+    #                         #Added By HAMED to fix the issue of zero ts_diff
+    #                         if ts_diff:
+    #                             bw = (byte_diff*8) / ts_diff
+    #                         else:
+    #                             bw = self.bandwith_port_dict[dpid_rec][port_no] 
+    #                         self.bandwith_port_dict[dpid_rec][port_no] = bw
+
+
+    #                         # Added by Hamed Jun 27, 2022 for producing dict src_sw:dst_sw:bw
+    #                         mylinks=[(link.src.dpid,link.dst.dpid,link.src.port_no,link.dst.port_no) for link in get_link(self, None)]
+    #                         for s,d,sp,dp in mylinks:
+    #                             if s==dpid_rec and sp==port_no:
+    #                                 self.bandwith_srcid_dstid_port_dict[s][d]=bw
+    #                                 #Added by HAMED Jul, 27, 2022 to add per path plr (packet loss ratio)
+    #                                 self.PortMap_send[s][sp]=statistic.tx_packets
+    #                                 self.PortMap_recv[s][sp]=statistic.rx_packets
+
+    #                                 #Added by HAMED Aug, 8, 2022 to add per link plr (packet loss ratio)
+    #                                 self.s1_s2_send[s][d]=statistic.tx_packets
+    #                                 self.s1_s2_recv[s][d]=statistic.rx_packets
+    #                                 self.s1_s2_pdr[s][d]=self._get_link_pdr(self.s1_s2_send[s][d],self.s1_s2_recv[d][s])
+    #                                 self.s1_s2_plr[s][d]=self._get_link_plr(self.s1_s2_send[s][d],self.s1_s2_recv[d][s])
+
+                            
+    #                         #Added by HAMED Jul, 27, 2022 to add plr (packet loss ratio)
+    #                         for id_foward in self.chosen_path_per_flow.keys():
+    #                             myPath=self.chosen_path_per_flow[id_foward]
+    #                             h1,h2=self.plr_srcip_dstip_h1_h2[id_foward][0], self.plr_srcip_dstip_h1_h2[id_foward][1]
+    #                             path_for_plr=self.add_ports_to_path(myPath,h1[1], h2[1])
+    #                             self.plr_path_firstoutport_lastinport[tuple(myPath)]=[myPath[0],
+    #                                 path_for_plr[myPath[0]][1], myPath[-1],path_for_plr[myPath[-1]][0]]
+    #                             tx=self.PortMap_send[myPath[0]][path_for_plr[myPath[0]][1]]
+    #                             rx=self.PortMap_recv[myPath[-1]][path_for_plr[myPath[-1]][0]]
+    #                             self.path_plr[tuple(myPath)]=self._get_plr(tx,rx)
+    #                             bw_cost=self.bandwith_srcid_dstid_port_dict[myPath[0]][myPath[1]]
+    #                             for i in range(len(myPath) - 1):
+    #                                 if self.bandwith_srcid_dstid_port_dict[myPath[i]][myPath[i+1]] < bw_cost :
+    #                                     bw_cost = self.bandwith_srcid_dstid_port_dict[myPath[i]][myPath[i+1]]
+    #                             self.path_bw[tuple(myPath)]=bw_cost
+
+
+                           
+    # # for getting flow stats
+    # @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
+    # def flow_stats_reply_handler(self, ev):
+    #     dpid_rec = ev.msg.datapath.id
+    #     # updating switch controller latency
+    #     self.rtt_portStats_to_dpid[dpid_rec] = time.time() - self.rtt_stats_sent[dpid_rec]
+
+    #     for statistic in ev.msg.body:
+    #         if 'icmpv4_type' not in statistic.match:
+    #             ip_src = statistic.match['ipv4_src']
+    #             ip_dst = statistic.match['ipv4_dst']
+    #             number_bytes = statistic.byte_count
+    #             if dpid_rec not in list(self.temp_bw_map_flows):
+    #                 self.temp_bw_map_flows[dpid_rec] = {}
+    #             if ip_src not in list(self.temp_bw_map_flows[dpid_rec]):
+    #                 self.temp_bw_map_flows[dpid_rec][ip_src] = {}
+    #             if ip_dst not in list(self.temp_bw_map_flows[dpid_rec][ip_src]):
+    #                 self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst] = {}
+    #                 ts_now = (statistic.duration_sec + statistic.duration_nsec / (10 ** 9))
+    #                 self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst]['ts'] = ts_now
+    #                 self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst]['bytes'] = statistic.byte_count
+    #             # everything inside
+    #             else:
+    #                 ts_now = (statistic.duration_sec + statistic.duration_nsec / (10 ** 9))
+    #                 time_diff = ts_now - self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst]['ts']
+    #                 bytes_diff = number_bytes - self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst]['bytes']
+    #                 if time_diff > 0.0:
+    #                     try:
+    #                         bw = (bytes_diff*8) / time_diff
+    #                     except ZeroDivisionError:
+    #                         self.logger.info(
+    #                             "Saved_ts: {} ts_now: {} diff: {}".format(
+    #                                 self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst]['ts'],
+    #                                 ts_now, time_diff))
+    #                     if dpid_rec not in list(self.bandwith_flow_dict.keys()):
+    #                         self.bandwith_flow_dict[dpid_rec] = {}
+    #                     if ip_src not in list(self.bandwith_flow_dict[dpid_rec].keys()):
+    #                         self.bandwith_flow_dict[dpid_rec][ip_src] = {}
+    #                     self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst]['ts'] = ts_now
+    #                     self.temp_bw_map_flows[dpid_rec][ip_src][ip_dst]['bytes'] = statistic.byte_count
+    #                     self.bandwith_flow_dict[dpid_rec][ip_src][ip_dst] = bw

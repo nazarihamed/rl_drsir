@@ -1,8 +1,8 @@
 import sys
-sys.path.insert(0,'/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/23nodos')
-# sys.path.insert(0,'/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/32nodos')
-# sys.path.insert(0,'/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/48nodos')
-# sys.path.insert(0,'/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/64nodos')
+sys.path.insert(0,setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/23nodos')
+# sys.path.insert(0,setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/32nodos')
+# sys.path.insert(0,setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/48nodos')
+# sys.path.insert(0,setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/64nodos')
 import time
 import bot
 import json,ast
@@ -44,14 +44,14 @@ def append_multiple_lines(file_name, lines_to_append):
 
 def get_paths_base():
 
-    file_base = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/'+str(num_nodes)+'nodos/paths_weight.json'
+    file_base = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/'+str(num_nodes)+'nodos/paths_weight.json'
     with open(file_base,'r') as json_file:
         paths_base = json.load(json_file)
         paths_base = ast.literal_eval(json.dumps(paths_base))
         return paths_base
 
 def get_paths_RL():
-    file_RL = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/rl_paths.json'
+    file_RL = setting.PATH_TO_FILES+'rl_paths.json'
     with open(file_RL,'r') as json_file:
         paths_dict = json.load(json_file)
         paths_RL = ast.literal_eval(json.dumps(paths_dict))
@@ -77,7 +77,7 @@ def calc_all_stretch(cont):
     total_paths = 0
     switches = [i for i in range(1,num_nodes+1)]
     a = time.time()
-    with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/stretch/'+str(cont)+'_stretch.csv','w') as csvfile:
+    with open(setting.PATH_TO_FILES+'stretch/'+str(cont)+'_stretch.csv','w') as csvfile:
         header = ['src','dst','add_st','mul_st']
         file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
         file.writerow(header)
@@ -171,7 +171,7 @@ def RL_thread(): #cambiar para que lo llame a rl
             print("**"+str(cont)+"**time remaining rl and stretch",sleep)        
             time.sleep(0.2)
         
-    file_info_eps = "/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/episode_info.txt"
+    file_info_eps = setting.PATH_TO_FILES+"episode_info.txt"
     list_of_lines = ["Episodes: "+str(episodes),"Iterations: "+str(cont),"Time iteration: "+str(iteration_times)+"\n",str(episode_rewards)+"\n",str(episode_states_all)+"\n", str(episode_duration_all)+"\n"]
     append_multiple_lines(file_info_eps, list_of_lines)
     # print("Episode rewards: ", episode_rewards)

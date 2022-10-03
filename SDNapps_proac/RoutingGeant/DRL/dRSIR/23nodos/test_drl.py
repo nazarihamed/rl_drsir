@@ -4,6 +4,7 @@ import numpy as np
 # import test_environment
 import environment_test_23nodes
 import time
+import setting
 if __name__ =="__main__":
     t = time.time()
     lrs = [0.01]#, 0.001, 0.0001, 0.00001]
@@ -85,7 +86,7 @@ if __name__ =="__main__":
             # print(str(len(env.topo_nodes))+"nodos/RL-paths_nodes_"+str(len(env.topo_nodes))+"_ns_"+tipo+"_rand_"+rand+"_stp_"+steps_+".txt")
             # print('\nEpisode rewards',episode_rewards)
             
-        path = "/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/"+str(len(env.topo_nodes))+"nodos/drl/"
+        path = setting.PATH_TO_FILES+"RoutingGeant/DRL/dRSIR/"+str(len(env.topo_nodes))+"nodos/drl/"
         name_env = "_ns_"+tipo+"_rand_"+rand+"_stp_"+steps_+"_actions_"+actions+"_start_"+start
         name_agent = "_hl_"+hl+"_neu_"+neu+"_rss_"+str(replay_start_size)+"_annr_"+str(anneal_rate)+"_bs_"+str(batch_size)+"_tup_"+str(target_update_freq)+"_rms_"+str(replay_memory_size)
         name_train = "_eps_"+str(episodes)+"_iter_"+str(iterations)

@@ -15,7 +15,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import arp
 
 # import sys
-# sys.path.insert(0,'/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant')
+# sys.path.insert(0,setting.PATH_TO_FILES+'RoutingGeant')
 # from main import get_all_paths
 # import pandas as pd
 import time
@@ -170,7 +170,7 @@ class Manager(app_manager.RyuApp):
                 self.net_metrics[link] = [round(self.link_free_bw[link],6), round(self.link_used_bw[link],6), round(self.delay.link_delay[link],6), round(self.link_loss[link],6)]
                 
             # print(self.net_info[(1, 7)])
-            with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/net_info.csv','wb') as csvfile:
+            with open(setting.PATH_TO_FILES+'net_info.csv','wb') as csvfile:
                 header_names = ['node1','node2','bwd','delay','pkloss']
                 file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 links_in = []
@@ -181,7 +181,7 @@ class Manager(app_manager.RyuApp):
                     if tup not in links_in:
                         file.writerow([link[0],link[1], values[0],values[1],values[2]])
 
-            file_metrics = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
+            file_metrics = setting.PATH_TO_FILES+'Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
             with open(file_metrics,'wb') as csvfile:
                 header_ = ['node1','node2','free_bw','used_bw','delay','pkloss']
                 file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -205,7 +205,7 @@ class Manager(app_manager.RyuApp):
                 self.net_metrics[link] = [round(self.link_free_bw[link],6), round(self.link_used_bw[link],6), round(self.delay.link_delay[link],6), round(self.link_loss[link],6)]
         
             # print(self.net_info[(1, 7)])
-            with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/net_info.csv','wb') as csvfile:
+            with open(setting.PATH_TO_FILES+'net_info.csv','wb') as csvfile:
                 header_names = ['node1','node2','bwd','delay','pkloss']
                 file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 links_in = []
@@ -216,7 +216,7 @@ class Manager(app_manager.RyuApp):
                     if tup not in links_in:
                         file.writerow([link[0],link[1], values[0],values[1],values[2]])
 
-            file_metrics = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
+            file_metrics = setting.PATH_TO_FILES+'Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
             with open(file_metrics,'wb') as csvfile:
                 header_ = ['node1','node2','free_bw','used_bw','delay','pkloss']
                 file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -335,7 +335,7 @@ class Manager(app_manager.RyuApp):
         # print('paths_metrics',self.paths_metrics)
         print('writing paths_metrics')
         
-        with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/paths_metrics.json','w') as json_file:
+        with open(setting.PATH_TO_FILES+'paths_metrics.json','w') as json_file:
             json.dump(self.paths_metrics, json_file, indent=2) 
         
         print('------****metrics k_paths', time.time()-i)
@@ -377,7 +377,7 @@ class Manager(app_manager.RyuApp):
     #             self.net_metrics[link] = [round(self.link_free_bw[link],6), round(self.link_used_bw[link],6), round(self.delay.link_delay[link],6), round(self.link_loss[link],6)]
                 
     #         # print(self.net_info[(1, 7)])
-    #         with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/net_info.csv','wb') as csvfile:
+    #         with open(setting.PATH_TO_FILES+'net_info.csv','wb') as csvfile:
     #             header_names = ['node1','node2','bwd','delay','pkloss']
     #             file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
     #             links_in = []
@@ -388,7 +388,7 @@ class Manager(app_manager.RyuApp):
     #                 if tup not in links_in:
     #                     file.writerow([link[0],link[1], values[0],values[1],values[2]])
 
-    #         file_metrics = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
+    #         file_metrics = setting.PATH_TO_FILES+'Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
     #         with open(file_metrics,'wb') as csvfile:
     #             header_ = ['node1','node2','free_bw','used_bw','delay','pkloss']
     #             file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -412,7 +412,7 @@ class Manager(app_manager.RyuApp):
     #             self.net_metrics[link] = [round(self.link_free_bw[link],6), round(self.link_used_bw[link],6), round(self.delay.link_delay[link],6), round(self.link_loss[link],6)]
         
     #         # print(self.net_info[(1, 7)])
-    #         with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/net_info.csv','wb') as csvfile:
+    #         with open(setting.PATH_TO_FILES+'net_info.csv','wb') as csvfile:
     #             header_names = ['node1','node2','bwd','delay','pkloss']
     #             file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
     #             links_in = []
@@ -423,7 +423,7 @@ class Manager(app_manager.RyuApp):
     #                 if tup not in links_in:
     #                     file.writerow([link[0],link[1], values[0],values[1],values[2]])
 
-    #         file_metrics = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
+    #         file_metrics = setting.PATH_TO_FILES+'Metrics/'+str(self.monitor.count_monitor)+'_net_metrics.csv'
     #         with open(file_metrics,'wb') as csvfile:
     #             header_ = ['node1','node2','free_bw','used_bw','delay','pkloss']
     #             file = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)

@@ -1,6 +1,6 @@
 import numpy as np
 import json, ast
-
+import setting
 def init_q(s, a, type="zeros"):
     """
     @param s the number of states
@@ -66,8 +66,8 @@ class QL_agent:
     def use_model(self,env):
         
         #Recover paths corresponding to each action for states
-        file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/'+str(len(env.topo_nodes))+'nodos/k_paths.json'
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/k_paths_20.json'
+        file = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/'+str(len(env.topo_nodes))+'nodos/k_paths.json'
+        # file = setting.PATH_TO_FILES+'k_paths_20.json'
         with open(file,'r') as json_file:
             k_paths = json.load(json_file)
             k_paths_dict = ast.literal_eval(json.dumps(k_paths))
@@ -84,7 +84,7 @@ class QL_agent:
                             rl_paths[src][dst].append(path)
 
         #write choosen paths
-        with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/rl_paths.json','w') as json_file:
+        with open(setting.PATH_TO_FILES+'rl_paths.json','w') as json_file:
             json.dump(rl_paths, json_file, indent=2)
         # print('\t Time total: ',time.time()-t)
         return rl_paths 

@@ -1,6 +1,7 @@
 import json, ast
 import networkx as nx
 from itertools import islice
+import setting
 
 '''k shorthest paths for drl--> removed from C0 since huge CPU consumption
 Now I calculate k_spaths outside, the agent just will know it '''
@@ -23,11 +24,11 @@ def all_k_shortest_paths(graph, weight='weight', k=10):
                 paths[src].setdefault(dst, [])
                 paths[src][dst] = k_shortest_paths(_graph, src, dst, weight=weight, k=k)
     print(paths)
-    with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/k_paths.json','w') as json_file:
+    with open(setting.PATH_TO_FILES+'k_paths.json','w') as json_file:
         json.dump(paths, json_file, indent=2) 
 
 def get_k_paths():
-    file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/k_paths.json'
+    file = setting.PATH_TO_FILES+'k_paths.json'
     with open(file,'r') as json_file:
         k_shortest_paths = json.load(json_file)
         k_shortest_paths = ast.literal_eval(json.dumps(k_shortest_paths))
@@ -35,7 +36,7 @@ def get_k_paths():
 
 num_nodes = 48
 k = 20
-file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/graph_'+str(num_nodes)+'Nodes.json'
+file = setting.PATH_TO_FILES+'graph_'+str(num_nodes)+'Nodes.json'
 with open(file,'r') as json_file:
     graph_dict = json.load(json_file)
     graph_dict = ast.literal_eval(json.dumps(graph_dict))

@@ -1,5 +1,7 @@
 import pandas as pd
-file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/net_info.csv'
+import setting
+
+file = setting.PATH_TO_FILES +'net_info.csv'
 df = pd.read_csv(file)
 df.delay = 0
 df.pkloss = 0

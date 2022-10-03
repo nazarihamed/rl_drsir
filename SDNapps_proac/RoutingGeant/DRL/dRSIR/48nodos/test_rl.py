@@ -3,6 +3,7 @@ import qlearning
 # import test_environment
 import environment_test_48nodes
 import time
+import setting
 if __name__ =="__main__":
 #     agent = agent_q.Agent()
 #     timestep_reward = agent.qlearning(agent.env,test = True)
@@ -80,7 +81,7 @@ if __name__ =="__main__":
         # print('\nEpisode rewards',episode_rewards)
         #seq
                
-        path = "/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/"+str(len(env.topo_nodes))+"nodos/rl/"
+        path = setting.PATH_TO_FILES+"RoutingGeant/DRL/dRSIR/"+str(len(env.topo_nodes))+"nodos/rl/"
         name_env = "_ns_"+tipo+"_rand_"+rand+"_stp_"+steps_+"_start_"+start
         name_agent = "_alpha_"+str(alpha)+"_RL-paths_nodes_"+str(len(env.topo_nodes))
         name_train = "_eps_"+str(episodes)+"_iter_"+str(iterations)

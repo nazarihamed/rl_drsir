@@ -5,6 +5,7 @@ import numpy as np
 import json, ast
 import agent
 import os
+import setting
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class Environment(object):
@@ -74,7 +75,7 @@ class Environment(object):
         
         # #Reads metrics paths file 
         # ini = time.time()
-        file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/paths_metrics.json'
+        file = setting.PATH_TO_FILES+'paths_metrics.json'
         num_actions = self.act_space_size
         rewards_dic = {}
         metrics = ['bwd_paths','delay_paths','loss_paths']

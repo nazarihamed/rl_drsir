@@ -5,6 +5,7 @@ import numpy as np
 import json, ast
 import agent
 import os
+import setting
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class Environment(object):
@@ -72,8 +73,8 @@ class Environment(object):
         return next_state, done 
 
     def rewards_sintetic(self):
-        file_topo = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/topos/topo_48.json'
-        file_k_paths = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/topos/topo_48_nodes_k_20_paths.json'
+        file_topo = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/topos/topo_48.json'
+        file_k_paths = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/topos/topo_48_nodes_k_20_paths.json'
         num_actions = self.act_space_size
         rewards_dic = {}
         with open(file_topo,'r+') as json_file:
@@ -104,9 +105,9 @@ class Environment(object):
         
         # #Reads metrics paths file 
         # ini = time.time()
-        # file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/RoutingGeant/DRL/dRSIR/48nodos/paths_metrics.json' #para probar ocvergencia
+        # file = setting.PATH_TO_FILES+'RoutingGeant/DRL/dRSIR/48nodos/paths_metrics.json' #para probar ocvergencia
         print('reading paths_metrics')
-        file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/paths_metrics.json' #para rodar trafico final
+        file = setting.PATH_TO_FILES+'paths_metrics.json' #para rodar trafico final
         
         num_actions = self.act_space_size
         rewards_dic = {}

@@ -62,7 +62,7 @@ class simple_Awareness(app_manager.RyuApp):
 
         self.graph = nx.DiGraph()
         # Get initiation delay.
-        self.initiation_delay = self.get_initiation_delay(4)
+        self.initiation_delay = self.get_initiation_delay(8)
         self.start_time = time.time()
 
         # Start a green thread to discover network resource.
@@ -182,7 +182,7 @@ class simple_Awareness(app_manager.RyuApp):
         # get this once for topology and no more
         # graph_dict = nx.to_dict_of_dicts(self.graph)
 
-        # with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/graph_'+str(len(self.switches))+'Nodes.json','w') as json_file:
+        # with open(setting.PATH_TO_FILES+'graph_'+str(len(self.switches))+'Nodes.json','w') as json_file:
         #     json.dump(graph_dict, json_file, indent=2)
 
         # # print('topology',graph_dict)
@@ -290,7 +290,7 @@ class simple_Awareness(app_manager.RyuApp):
    
     # def get_k_paths(self):
     #     i = time.time()
-    #     file = '/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/k_paths.json'
+    #     file = setting.PATH_TO_FILES+'k_paths.json'
     #     with open(file,'r') as json_file:
     #         k_shortest_paths = json.load(json_file)
     #         k_shortest_paths = ast.literal_eval(json.dumps(k_shortest_paths))
@@ -315,7 +315,7 @@ class simple_Awareness(app_manager.RyuApp):
     #             if src != dst:
     #                 paths[src].setdefault(dst, [])
     #                 paths[src][dst] = self.k_shortest_paths(_graph, src, dst, weight=weight, k=k)
-    #     with open('/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/k_paths.json','w') as json_file:
+    #     with open(setting.PATH_TO_FILES+'k_paths.json','w') as json_file:
     #         json.dump(paths, json_file, indent=2) 
     #     return paths
 
@@ -359,5 +359,5 @@ class simple_Awareness(app_manager.RyuApp):
 
         # nx.draw(self.graph)
         # plt.show()
-        # plt.savefig("/home/containernet/controlador/ryu/ryu/app/SDNapps_proac/%d.png" % int(time.time()))
+        # plt.savefig(setting.PATH_TO_FILES+"%d.png" % int(time.time()))
 
